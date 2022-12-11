@@ -173,16 +173,17 @@
                                                              (prediction-results widget))
                                  for idx upfrom 0
                                  for last-item = (= idx (1- len)) 
-                                 do (:div :class (if last-item
-                                                     "prediction"
-                                                     "prediction last-item")
-                                          (:div :class "prosadka"
-                                                :style (fmt "height: ~,4F%" (* price 100)))
-                                          (:div :class "price"
-                                                :style (fmt "height: ~,4F%" (* (- 1.0 price)
-                                                                               100)))
-                                          (:div :class "competitors"
-                                                competitors)))
+                                 do (let ((price (min price 1.0)))
+                                      (:div :class (if last-item
+                                                       "prediction"
+                                                       "prediction last-item")
+                                            (:div :class "prosadka"
+                                                  :style (fmt "height: ~,4F%" (* price 100)))
+                                            (:div :class "price"
+                                                  :style (fmt "height: ~,4F%" (* (- 1.0 price)
+                                                                                 100)))
+                                            (:div :class "competitors"
+                                                  competitors))))
                            (:span :class "last-price"
                                   (fmt "~,2F%"
                                        (* 100 (first (first (prediction-results widget)))))))
