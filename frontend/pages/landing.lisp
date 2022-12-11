@@ -161,18 +161,32 @@
                                ((< (max-total-price widget)
                                    10000)
                                 "😭")
-                               ((< (max-total-price widget)
-                                   100000)
+                               (t
                                 "😱")))))
 
              (when (prediction-results widget)
-               (:div :class "results"
-                     (:p :class "total-price"
-                         "Вероятная итоговая цена:"
-                         (:span (first (prediction-results widget))))
-                     (:p :class "total-price"
-                         "Вероятное количество участников:"
-                         (:span (second (prediction-results widget))))))))))
+               (:div :class "graph"
+                     (loop for (price competitors) in (reverse
+                                                       (prediction-results widget))
+                           do (:div :class "prediction"
+                                    (:div :class "prosadka"
+                                          :style (fmt "height: ~,4F%" (* price 100)))
+                                    (:div :class "price"
+                                          :style (fmt "height: ~,4F%" (* (- 1.0 price)
+                                                                         100)))
+                                    (:div :class "competitors"
+                                          competitors)))
+                     (:span :class "last-price"
+                            (fmt "~,2F%"
+                                 (* 100 (first (first (prediction-results widget)))))))
+               ;; (:div :class "results"
+               ;;       (:p :class "total-price"
+               ;;           "Вероятная итоговая цена:"
+               ;;           (:span (first (prediction-results widget))))
+               ;;       (:p :class "total-price"
+               ;;           "Вероятное количество участников:"
+               ;;           (:span (second (prediction-results widget)))))
+               )))))
 
 
 (defun remove-pkgz-item (landing-widget
@@ -201,8 +215,13 @@
                   (setf (max-total-price widget)
                         total)
 
-                  (setf (prediction-results widget)
-                        (app/predict::predict "Какая-то сессия" codes total))
+                  (when (and (prediction-results widget)
+                             (not (listp (first (prediction-results widget)))))
+                    (setf (prediction-results widget)
+                          (list (prediction-results widget))))
+
+                  (push (app/predict::predict "Какая-то сессия" codes total)
+                        (prediction-results widget))
                     
                   (reblocks/widget:update widget))))
 
@@ -259,7 +278,7 @@
                      (kpgz-price widget))
 
             (:div :class "total-price"
-                  "Сумма:"
+                  "Сумма"
                   (:span (fmt "~,2F ₽" (* (kpgz-amount widget)
                                       (kpgz-price widget))))))
       
@@ -271,23 +290,44 @@
       (with-html-form (:post #'remove-kpgz)
         (:input :type "submit"
                 :class "button warning"
-                :value "Убрать")))))
+                :value "Удалить")))))
 
 
 (defmethod get-dependencies ((widget landing-page))
   (list* (reblocks-lass:make-dependency
            `(.landing-page
+             ((:and .button .warning)
+              :background-color "rgba(0, 0, 0, 0)"
+              :border 2px solid "rgb(38, 75, 130)"
+              :margin-bottom 0
+              :margin-top 1rem)
+             ((:and .button .warning :hover)
+              :background-color "rgb(38, 75, 130)"
+              :color white)
+             
+             ((:and .button .success)
+              :background-color "rgba(0, 0, 0, 0)"
+              :border 2px solid "rgb(185, 56, 45)"
+              :border-radius 5px)
+             ((:and .button .success :hover)
+              :background-color "rgb(185, 56, 45)"
+              :color white)
+             
              (.total-price
               :font-size 1.7rem
-              (span :margin-left 0.5rem))
+              (span :margin-left 0.5rem
+                    :color "rgb(38, 75, 130)"
+                    :font-weight 700))
              (.starting-price
-               :background-color "rgb(232, 238, 246)"
-               :border 1px solid "rgb(209, 214, 221)"
-               :border-radius 5px
-               :padding 1rem
-               :margin-left -1rem
-               :margin-right 2rem
-               :margin-bottom 1rem)
+              :background-color "rgb(232, 238, 246)"
+              :border 1px solid "rgb(209, 214, 221)"
+              :border-radius 5px
+              :padding 1rem
+              :margin-left -1rem
+              :margin-right 2rem
+              :margin-bottom 1rem
+              (span :color "rgb(38, 75, 130)"
+                    :font-weight bold))
              (.kpgz-items
               :display flex
               :flex-wrap wrap
@@ -300,5 +340,23 @@
                :margin-right 2rem
                :margin-bottom 1rem
                :max-width 30%
-               ))))
+               ))
+
+             (.graph
+              :display flex
+              :flex-direction row
+              :gap 1rem
+              :margin-bottom 10rem
+              (.prediction
+               :width 2rem
+               :height 10rem
+               (.prosadka
+                :background-color "rgb(185, 56, 45)")
+               (.price
+                :background-color "rgb(47, 74, 126)")
+               (.competitors
+                :text-align center
+                :background-color "rgb(232, 238, 246)"))
+              (.last-price
+               :font-size 1.5rem))))
          (call-next-method)))

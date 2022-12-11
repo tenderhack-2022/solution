@@ -81,7 +81,7 @@
                                :font-weight bold
                                :color darkgray
                                (.first :color red)
-                               (.second :color "#315593"
+                               (.second :color "rgb(47, 74, 126)"
                                         :margin-left -0.2em)))
 
        ((:or .navbar-user-icon
