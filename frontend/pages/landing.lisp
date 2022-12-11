@@ -263,9 +263,6 @@
       (render (kpgz-input widget))
 
       (with-html-form (:post #'update)
-        ;; (:input :type "text"
-        ;;         :name "kpgz-or-name"
-        ;;         :placeholder "КПГЗ или наименование товара либо услуги")
         (let ((update-action (reblocks/actions:make-js-form-action #'update)))
           (:label "Количество")
           (:input :type "number"
