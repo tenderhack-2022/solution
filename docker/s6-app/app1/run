@@ -1,0 +1,8 @@
+#!/bin/bash
+
+mkdir -p /app/logs
+
+CURRENT_APP="${APP:-app}"
+/app/scripts/app >> /app/logs/${CURRENT_APP}-stdout.log \
+	2>> /app/logs/${CURRENT_APP}-stderr.log
+
