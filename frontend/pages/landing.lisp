@@ -166,19 +166,27 @@
 
              (when (prediction-results widget)
                (:div :class "graph"
-                     (loop for (price competitors) in (reverse
-                                                       (prediction-results widget))
-                           do (:div :class "prediction"
-                                    (:div :class "prosadka"
-                                          :style (fmt "height: ~,4F%" (* price 100)))
-                                    (:div :class "price"
-                                          :style (fmt "height: ~,4F%" (* (- 1.0 price)
-                                                                         100)))
-                                    (:div :class "competitors"
-                                          competitors)))
-                     (:span :class "last-price"
-                            (fmt "~,2F%"
-                                 (* 100 (first (first (prediction-results widget)))))))
+                     (:img :src "https://love-me-tender-love-me-sweet.40ants.com/images/left.png")
+                     (:div :class "predictions"
+                           (loop with len = (length (prediction-results widget))
+                                 for (price competitors) in (reverse
+                                                             (prediction-results widget))
+                                 for idx upfrom 0
+                                 for last-item = (= idx (1- len)) 
+                                 do (:div :class (if last-item
+                                                     "prediction"
+                                                     "prediction last-item")
+                                          (:div :class "prosadka"
+                                                :style (fmt "height: ~,4F%" (* price 100)))
+                                          (:div :class "price"
+                                                :style (fmt "height: ~,4F%" (* (- 1.0 price)
+                                                                               100)))
+                                          (:div :class "competitors"
+                                                competitors)))
+                           (:span :class "last-price"
+                                  (fmt "~,2F%"
+                                       (* 100 (first (first (prediction-results widget)))))))
+                     (:img :src "https://love-me-tender-love-me-sweet.40ants.com/images/right.png"))
                ;; (:div :class "results"
                ;;       (:p :class "total-price"
                ;;           "Вероятная итоговая цена:"
@@ -280,12 +288,7 @@
             (:div :class "total-price"
                   "Сумма"
                   (:span (fmt "~,2F ₽" (* (kpgz-amount widget)
-                                      (kpgz-price widget))))))
-      
-          ;; (:input :type "submit"
-          ;;         :class "button success"
-          ;;         :value "Обновить")
-          ))
+                                          (kpgz-price widget))))))))
       
       (with-html-form (:post #'remove-kpgz)
         (:input :type "submit"
@@ -345,18 +348,34 @@
              (.graph
               :display flex
               :flex-direction row
-              :gap 1rem
+              :justify-content space-between
+              :align-items center
               :margin-bottom 10rem
-              (.prediction
-               :width 2rem
-               :height 10rem
-               (.prosadka
-                :background-color "rgb(185, 56, 45)")
-               (.price
-                :background-color "rgb(47, 74, 126)")
-               (.competitors
-                :text-align center
-                :background-color "rgb(232, 238, 246)"))
+              :margin-left -3rem
+
+              (img :height 7rem)
+              
+              (.predictions
+               :flex-direction row
+               :gap 1rem
+               :display flex
+               :flex-direction row
+               :gap 1rem
+               (.prediction
+                :width 2rem
+                :height 10rem
+                :opacity 100%
+                (.prosadka
+                 :background-color "rgb(185, 56, 45)"
+                 :border-top-left-radius 10px)
+                (.price
+                 :background-color "rgb(47, 74, 126)"
+                 :border-bottom-right-radius 10px)
+                (.competitors
+                 :text-align center
+                 :background-color "rgb(232, 238, 246)"))
+               ((:and .prediction .last-item)
+                :opacity 50%))
               (.last-price
                :font-size 1.5rem))))
          (call-next-method)))
