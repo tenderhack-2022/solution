@@ -49,8 +49,10 @@
          ;; (:link :href "https://ideahunt.ru/static/css/main.a005c85d.css"
          ;;        :rel "stylesheet")
          (:div :class "navbar"
+               (:img :src "https://zakupki.mos.ru/static/media/pp_logo_ny.94891f12246e7741c4a10dba12921d6b.svg")
                (:span :class "navbar-main-logo"
-                      "TenderLead")))
+                      (:span :class "first" "Tender")
+                      (:span :class "second" "Lead"))))
 
         (:div :class "page-content"
               (render (content widget)))))))
@@ -65,14 +67,22 @@
        :flex-direction column
        :align-items center
 
+       ((:and input :disabled)
+         :background "rgb(232, 238, 246)")
+
        (.navbar
         :display flex
-        :justify-content center
+        :justify-content space-between
         :margin-top 1rem
         :margin-bottom 2rem
+        :padding-left 4rem
+        :padding-right 4rem
         (span.navbar-main-logo :font-size 2rem
                                :font-weight bold
-                               :color darkgray))
+                               :color darkgray
+                               (.first :color red)
+                               (.second :color "#315593"
+                                        :margin-left -0.2em)))
 
        ((:or .navbar-user-icon
              .login-link)

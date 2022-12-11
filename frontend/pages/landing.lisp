@@ -147,7 +147,7 @@
                        :class "button success"
                        :value "Добавить позицию"))
 
-             (:p :class "total-price"
+             (:p :class "starting-price total-price"
                  "НАЧАЛЬНАЯ ЦЕНА"
                  (:span (fmt "~,2F ₽ ~A"
                              (max-total-price widget)
@@ -280,12 +280,20 @@
              (.total-price
               :font-size 1.7rem
               (span :margin-left 0.5rem))
+             (.starting-price
+               :background-color "rgb(232, 238, 246)"
+               :border 1px solid "rgb(209, 214, 221)"
+               :border-radius 5px
+               :padding 1rem
+               :margin-left -1rem
+               :margin-right 2rem
+               :margin-bottom 1rem)
              (.kpgz-items
               :display flex
               :flex-wrap wrap
               (.kpgz-item
-               :background-color "#d5d5d5"
-               :border 1px solid "#9f9f9f"
+               :background-color "rgb(232, 238, 246)"
+               :border 1px solid "rgb(209, 214, 221)"
                :border-radius 5px
                :padding 1rem
                :margin-left -1rem
